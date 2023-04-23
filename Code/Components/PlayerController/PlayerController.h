@@ -14,14 +14,14 @@ class CPlayerController final : public IEntityComponent {
 	static constexpr auto rotation_pitch_max = 80.0f;
 
 	enum {
-			idle = 0
-		,	move_forward
+			move_forward = 0
 		,	move_back
 		,	move_right
 		,	move_left
 		,	boost
 		,	jump
 		,	crouch
+		,	total_states
 	};
 
 public:
@@ -41,6 +41,5 @@ private:
 	Cry::DefaultComponents::CCameraComponent* camera_component_{};
 
 	Vec2 mouse_location_delta_{ ZERO };
-
-	std::bitset<7> state_flags_{};
+	std::bitset<total_states> states_flags_{};
 };
