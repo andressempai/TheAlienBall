@@ -20,6 +20,15 @@ void CPlayerController::ReflectType(Schematyc::CTypeDesc<CPlayerController>& des
 {
 	desc.SetGUID("{761DD699-0799-4FB8-BCDC-024ECC72919A}"_cry_guid);
 	desc.AddMember(
+			&CPlayerController::walk_speed_
+		,	'wspe'
+		,	"walkspeed"
+		,	"Walk Speed"
+		,	"Maximun Speed when player walking"
+		,	walk_speed
+	);
+
+	desc.AddMember(
 			&CPlayerController::rotation_pitch_min_
 		,	'pmin'
 		,	"pitchmin"
@@ -53,8 +62,36 @@ void CPlayerController::Initialize()
 			mouse_location_delta_.y -= value;
 		});
 
+	input_component_->RegisterAction("player", "moveforward", [this](int activation_mode, float value)
+		{
+			if (activation_mode == eAAM_OnHold)
+				state_flags_.set(move_forward);
+		});
+
+	input_component_->RegisterAction("player", "moveback", [this](int activation_mode, float value)
+		{
+			if (activation_mode == eAAM_OnHold)
+				state_flags_.set(move_back);
+		});
+
+	input_component_->RegisterAction("player", "moveright", [this](int activation_mode, float value)
+		{
+			if (activation_mode == eAAM_OnHold)
+				state_flags_.set(move_right);
+		});
+
+	input_component_->RegisterAction("player", "moveleft", [this](int activation_mode, float value)
+		{
+			if (activation_mode == eAAM_OnHold)
+				state_flags_.set(move_left);
+		});
+
 	input_component_->BindAction("player", "rotate_yaw", eAID_KeyboardMouse, eKI_MouseX);
 	input_component_->BindAction("player", "rotate_pitch", eAID_KeyboardMouse, eKI_MouseY);
+	input_component_->BindAction("player", "moveforward", eAID_KeyboardMouse, eKI_W);
+	input_component_->BindAction("player", "moveback", eAID_KeyboardMouse, eKI_S);
+	input_component_->BindAction("player", "moveright", eAID_KeyboardMouse, eKI_D);
+	input_component_->BindAction("player", "moveleft", eAID_KeyboardMouse, eKI_A);
 
 	character_controller_component_ = m_pEntity->GetOrCreateComponent<CCharacterControllerComponent>();
 	character_controller_component_->SetTransformMatrix(Matrix34::CreateTranslationMat(Vec3{ 0.0f, 0.0f, 0.5f }));
@@ -73,6 +110,23 @@ void CPlayerController::ProcessEvent(const SEntityEvent& event)
 {
 	if (gEnv->IsEditing())
 		return;
+
+	auto move_velocity = Vec3{ ZERO };
+
+	if (state_flags_.test(move_forward))
+		move_velocity.y += 1.0f;
+	if (state_flags_.test(move_back))
+		move_velocity.y -= 1.0f;
+	if (state_flags_.test(move_right))
+		move_velocity.x += 1.0f;
+	if (state_flags_.test(move_left))
+		move_velocity.x -= 1.0f;
+
+	move_velocity.Normalize();
+
+	const auto camera_rotation = Quat{ camera_component_->GetTransformMatrix() };
+	const auto movement_vector = move_velocity * walk_speed_;
+	character_controller_component_->SetVelocity(Quat::CreateRotationZ(camera_rotation.GetRotZ()) * movement_vector);
 
 	if (!mouse_location_delta_.IsZero()) {
 		auto camera_transform = camera_component_->GetTransformMatrix();
@@ -96,5 +150,6 @@ void CPlayerController::ProcessEvent(const SEntityEvent& event)
 		camera_component_->SetTransformMatrix(camera_transform);
 	}
 
+	state_flags_.reset();
 	mouse_location_delta_.zero();
 }
