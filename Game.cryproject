@@ -1,36 +1,3 @@
-{
-	"version": 4,
-	"type": "",
-	"info": {
-		"name": "TheAlienBall",
-		"guid": "cf957e42-2f59-03e6-d8cf-b05b3f1ee178"
-	},
-	"content": {
-		"assets": [ "Assets" ],
-		"code": [ "Code" ],
-		"libs": [
-			{
-				"name": "TheAlienBall",
-				"shared": { "any": "", "win_x64": "", "win_x86": "" }
-			}
-		]
-	},
-	"require": {
-		"engine": "engine-5.7",
-		"plugins": [
-			{ "guid": "", "type": "EType::Native", "path": "CryDefaultEntities" },
-			{ "guid": "", "type": "EType::Native", "path": "CryScaleformSchematyc" },
-			{ "guid": "", "type": "EType::Native", "path": "CrySensorSystem" },
-			{ "guid": "", "type": "EType::Native", "path": "CryPerceptionSystem" },
-			{ "guid": "", "type": "EType::Native", "path": "bin/win_x64/Game.dll" },
-			{
-				"guid": "",
-				"type": "EType::Native",
-				"path": "CryGamePlatform",
-				"platforms": [ "PS4" ]
-			}
-		]
-	},
-	"console_variables": { "sys_target_platforms": "pc,ps4,xboxone,linux" },
-	"console_commands": { }
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:f441a9dff758d2d3a0a3fca041b8a9f68593ea54aed17811a38c7376583e1427
+size 947
