@@ -9,6 +9,12 @@ namespace Cry::DefaultComponents {
 }
 
 class CPlayerController final : public IEntityComponent {
+	static constexpr auto radius = 0.45f;
+	static constexpr auto stand_height = 0.935f;
+	static constexpr auto crouch_height = 0.535f;
+	static constexpr auto capsule_height_offset = 0.05f;
+	static constexpr auto eyes_height_stand = 0.735f;
+	static constexpr auto eyes_height_crouch = 0.435f;
 	static constexpr auto min_walk_speed = 2.5f;
 	static constexpr auto max_walk_speed = 4.5f;
 	static constexpr auto jump_speed = 5.7f;
@@ -36,6 +42,12 @@ private:
 	Cry::Entity::EventFlags GetEventMask() const override;
 	void ProcessEvent(const SEntityEvent& event) override;
 
+	float radius_{ radius };
+	float stand_height_{ stand_height };
+	float crouch_height_{ crouch_height };
+	float capsule_height_offset_{ capsule_height_offset };
+	float eyes_height_stand_{ eyes_height_stand };
+	float eyes_height_crouch_{ eyes_height_crouch };
 	float min_walk_speed_{ min_walk_speed };
 	float max_walk_speed_{ max_walk_speed };
 	float jump_speed_{ jump_speed };
@@ -47,6 +59,7 @@ private:
 	Cry::DefaultComponents::CCameraComponent* camera_component_{};
 
 	Vec2 mouse_location_delta_{ ZERO };
+	bool is_crouch_{ false };
 
 	std::bitset<total_states> state_flags_{};
 };
