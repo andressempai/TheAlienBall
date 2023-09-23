@@ -57,24 +57,6 @@ void CPlayerController::ReflectType(Schematyc::CTypeDesc<CPlayerController>& des
 	);
 
 	desc.AddMember(
-			&CPlayerController::eyes_height_stand_
-		,	'ehis'
-		,	"eyesheightstand"
-		,	"Eyes Height Stand"
-		,	"Player Eyes Height when is Stand."
-		,	eyes_height_stand
-	);
-
-	desc.AddMember(
-			&CPlayerController::eyes_height_crouch_
-		,	'ehic'
-		,	"eyesheightcrouch"
-		,	"Eyes Height Crouch"
-		,	"Player Eyes Height when is Crouch."
-		,	eyes_height_crouch
-	);
-
-	desc.AddMember(
 			&CPlayerController::min_walk_speed_
 		,	'mwsp'
 		,	"minwalkspeed"
@@ -260,7 +242,7 @@ void CPlayerController::ProcessEvent(const SEntityEvent& event)
 			const auto player_height = [this]() -> f32
 			{
 				if (is_crouch_)
-					return crouch_height_ * 0.25f;
+					return crouch_height_;
 
 				const auto rad = radius_ * 0.5f;
 				const auto hei = stand_height_ * 0.5f;
@@ -282,11 +264,11 @@ void CPlayerController::ProcessEvent(const SEntityEvent& event)
 				if (gEnv->pPhysicalWorld->PrimitiveWorldIntersection(physic_intersection_params) > 0.0f) {
 					is_crouch_ = true;
 
-					return crouch_height_ * 0.25f;
+					return crouch_height_;
 				}
 
-				return stand_height_ * 0.25f;
-			}();
+				return stand_height_;
+			}() / 4.0f;
 
 			pe_player_dimensions player_dimensions{};
 			physcial_entity->GetParams(&player_dimensions);

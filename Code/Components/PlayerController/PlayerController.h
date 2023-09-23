@@ -13,8 +13,6 @@ class CPlayerController final : public IEntityComponent {
 	static constexpr auto stand_height = 0.935f;
 	static constexpr auto crouch_height = 0.535f;
 	static constexpr auto capsule_height_offset = 0.05f;
-	static constexpr auto eyes_height_stand = 0.735f;
-	static constexpr auto eyes_height_crouch = 0.435f;
 	static constexpr auto min_walk_speed = 2.5f;
 	static constexpr auto max_walk_speed = 4.5f;
 	static constexpr auto jump_speed = 5.7f;
@@ -45,9 +43,7 @@ private:
 	float radius_{ radius };
 	float stand_height_{ stand_height };
 	float crouch_height_{ crouch_height };
-	float capsule_height_offset_{ capsule_height_offset };
-	float eyes_height_stand_{ eyes_height_stand };
-	float eyes_height_crouch_{ eyes_height_crouch };
+	float capsule_height_offset_{ capsule_height_offset };\
 	float min_walk_speed_{ min_walk_speed };
 	float max_walk_speed_{ max_walk_speed };
 	float jump_speed_{ jump_speed };
