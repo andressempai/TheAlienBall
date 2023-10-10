@@ -8,6 +8,7 @@
 #include <DefaultComponents/Physics/CharacterControllerComponent.h>
 #include <DefaultComponents/Cameras/CameraComponent.h>
 #include <CryPhysics/physinterface.h>
+#include <CryRenderer/IRenderer.h>
 
 void register_player_controller(Schematyc::IEnvRegistrar& registrar)
 {
@@ -45,6 +46,24 @@ void CPlayerController::ReflectType(Schematyc::CTypeDesc<CPlayerController>& des
 		,	"Crouch Height"
 		,	"Player Collider Height when is Crouch."
 		,	crouch_height
+	);
+
+	desc.AddMember(
+			&CPlayerController::eyes_height_stand_
+		,	'ehst'
+		,	"eyesheightstand"
+		,	"Eyes Height Stand"
+		,	"Eyes Height while is stand."
+		,	eyes_height_stand
+	);
+
+	desc.AddMember(
+			&CPlayerController::eyes_height_crouch_
+		,	'ehcr'
+		,	"eyesheightcrouch"
+		,	"Eyes Height Crouch"
+		,	"Eyes Height while is crouch."
+		,	eyes_height_crouch
 	);
 
 	desc.AddMember(
@@ -170,11 +189,13 @@ void CPlayerController::Initialize()
 	input_component_->BindAction("player", "movedown", eAID_KeyboardMouse, eKI_LCtrl);
 
 	character_controller_component_ = m_pEntity->GetOrCreateComponent<CCharacterControllerComponent>();
-	character_controller_component_->SetTransformMatrix(Matrix34::CreateTranslationMat(Vec3{ 0.0f, 0.0f, 0.5f }));
+	character_controller_component_->SetTransformMatrix(
+		Matrix34::CreateTranslationMat(Vec3{ 0.0f, 0.0f, capsule_height_offset_ }));
+
 	character_controller_component_->Physicalize();
 
 	camera_component_ = m_pEntity->GetOrCreateComponent<CCameraComponent>();
-	camera_component_->SetTransformMatrix(Matrix34::CreateTranslationMat(Vec3{ 0.0f, 0.0f, 0.735f }));
+	camera_component_->SetTransformMatrix(Matrix34::CreateTranslationMat(Vec3{ 0.0f, 0.0f, eyes_height_stand_ }));
 }
 
 Cry::Entity::EventFlags CPlayerController::GetEventMask() const
@@ -238,20 +259,23 @@ void CPlayerController::ProcessEvent(const SEntityEvent& event)
 		is_crouch_ = !is_crouch_;
 
 		if (auto* const physcial_entity = m_pEntity->GetPhysicalEntity()) {
-			const auto player_radius = radius_ / 2.0f;
-			const auto player_height = [this]() -> f32
+			dimensions = [this]() -> Dimensions
 			{
 				if (is_crouch_)
-					return crouch_height_;
+					return { radius_, crouch_height_, eyes_height_crouch_ };
 
-				const auto rad = radius_ * 0.5f;
-				const auto hei = stand_height_ * 0.5f;
+				const auto radius = radius_ * 0.5f;
+				const auto height = stand_height_ * 0.5f;
 
 				primitives::capsule capsule{};
-				capsule.center = m_pEntity->GetWorldPos() + Vec3(0.0f, 0.0f, rad + hei + capsule_height_offset_);
+				capsule.center = m_pEntity->GetWorldPos() + Vec3(0.0f, 0.0f, radius + height);
 				capsule.axis = Vec3(0.0f, 0.0f, 1.0f);
-				capsule.r = rad;
-				capsule.hh = hei;
+				capsule.r = radius;
+				capsule.hh = height;
+
+				auto* debugger = gEnv->pGameFramework->GetIPersistantDebug();
+				debugger->Begin("Sensor", false);
+				debugger->AddCylinder(capsule.center, capsule.axis, capsule.r, capsule.hh, Col_Red, 5.0f);
 
 				std::array ignored_entities{ m_pEntity->GetPhysicalEntity() };
 
@@ -264,21 +288,36 @@ void CPlayerController::ProcessEvent(const SEntityEvent& event)
 				if (gEnv->pPhysicalWorld->PrimitiveWorldIntersection(physic_intersection_params) > 0.0f) {
 					is_crouch_ = true;
 
-					return crouch_height_;
+					return { radius_, crouch_height_, eyes_height_crouch_ };
 				}
 
-				return stand_height_;
-			}() / 4.0f;
+				return { radius_, stand_height_, eyes_height_stand_ };
+			}();
 
 			pe_player_dimensions player_dimensions{};
 			physcial_entity->GetParams(&player_dimensions);
 
-			player_dimensions.sizeCollider = Vec3(player_radius, 0.0f, player_height);
-			player_dimensions.heightCollider = player_radius + player_height + capsule_height_offset_;
+			const auto radius = dimensions.radius * 0.5f;
+			const auto height = dimensions.height * 0.25f;
+
+			player_dimensions.sizeCollider = Vec3(radius, 0.0f, height);
+			player_dimensions.heightCollider = radius + height;
 
 			physcial_entity->SetParams(&player_dimensions);
 		}
 	}
+
+	auto camera_transform = camera_component_->GetTransformMatrix();
+	const auto current_camera_position = camera_transform.GetColumn3();
+	const auto target_camera_position = Vec3(0.0f, 0.0f, dimensions.eyes_height);
+	const auto final_camera_transform = Vec3::CreateLerp(
+			current_camera_position
+		,	target_camera_position
+		,	7.5f * event.fParam[0]
+	);
+
+	camera_transform.SetTranslation(final_camera_transform);
+	camera_component_->SetTransformMatrix(camera_transform);
 
 	state_flags_.reset();
 	mouse_location_delta_.zero();
