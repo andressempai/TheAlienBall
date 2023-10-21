@@ -28,6 +28,12 @@ add_sources("Components_uber.cpp"
 		"Components/Player.cpp"
 		"Components/Player.h"
 )
+add_sources("Interaction_uber.cpp"
+    PROJECTS Game
+    SOURCE_GROUP "Components\\\\Interaction"
+		"Components/Interaction/Interaction.cpp"
+		"Components/Interaction/Interaction.h"
+)
 add_sources("PlayerController_uber.cpp"
     PROJECTS Game
     SOURCE_GROUP "Components\\\\PlayerController"

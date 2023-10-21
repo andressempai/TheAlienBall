@@ -63,6 +63,7 @@ private:
 	Cry::DefaultComponents::CInputComponent* input_component_{};
 	Cry::DefaultComponents::CCharacterControllerComponent* character_controller_component_{};
 	Cry::DefaultComponents::CCameraComponent* camera_component_{};
+	class CInteraction* interaction_component_{};
 
 	Vec2 mouse_location_delta_{ ZERO };
 	bool is_crouch_{ false };
