@@ -2,6 +2,7 @@
 
 #include <CryEntitySystem/IEntityComponent.h>
 #include <CrySchematyc/MathTypes.h>
+#include <CryPhysics/physinterface.h>
 
 class CInteraction final : public IEntityComponent {
 	static constexpr auto component_update_interval = 0.25f;
@@ -9,6 +10,11 @@ class CInteraction final : public IEntityComponent {
 
 public:
 	static void ReflectType(Schematyc::CTypeDesc<CInteraction>& desc);
+
+	[[nodiscard]] const ray_hit& hit_result() const
+	{
+		return hit_result_;
+	}
 
 private:
 	Cry::Entity::EventFlags GetEventMask() const override;
@@ -18,4 +24,6 @@ private:
 	Schematyc::PositiveFloat distance_{ distance };
 
 	f32 time_interval_{ 0.0f };
+
+	ray_hit hit_result_{};
 };

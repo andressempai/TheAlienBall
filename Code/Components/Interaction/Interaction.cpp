@@ -1,8 +1,5 @@
 #include "Interaction.h"
 
-#include <CryPhysics/physinterface.h>
-#include <CryEntitySystem/IEntitySystem.h>
-
 #include <array>
 
 void CInteraction::ReflectType(Schematyc::CTypeDesc<CInteraction>& desc)
@@ -50,27 +47,17 @@ void CInteraction::ProcessEvent(const SEntityEvent& event)
 		const auto camera_position = camera.GetPosition();
 		const auto camera_direction = camera.GetViewdir().GetNormalized();
 
-		ray_hit hit_result{};
-
 		std::array skip_entities{ m_pEntity->GetPhysicalEntity() };
 
-		if (gEnv->pPhysicalWorld->RayWorldIntersection(
+		gEnv->pPhysicalWorld->RayWorldIntersection(
 				camera_position
 			,	camera_direction * distance_
 			,	ent_static | ent_rigid | ent_sleeping_rigid
 			,	rwi_stop_at_pierceable
-			,	std::addressof(hit_result)
+			,	std::addressof(hit_result_)
 			,	1
 			,	skip_entities.data()
 			,	skip_entities.size()
-		)) {
-			auto* const detected_entity = gEnv->pEntitySystem->GetEntityFromPhysics(hit_result.pCollider);
-			CryWarning(
-					VALIDATOR_MODULE_3DENGINE
-				,	VALIDATOR_WARNING
-				,	"Detected Entity is: %s"
-				,	detected_entity->GetName()
-			);
-		}
+		);
 	}
 }

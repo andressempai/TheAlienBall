@@ -26,6 +26,7 @@ add_sources("Components_uber.cpp"
     PROJECTS Game
     SOURCE_GROUP "Components"
 		"Components/Player.cpp"
+		"Components/Interactable.h"
 		"Components/Player.h"
 )
 add_sources("Interaction_uber.cpp"
@@ -33,6 +34,12 @@ add_sources("Interaction_uber.cpp"
     SOURCE_GROUP "Components\\\\Interaction"
 		"Components/Interaction/Interaction.cpp"
 		"Components/Interaction/Interaction.h"
+)
+add_sources("LightSwitch_uber.cpp"
+    PROJECTS Game
+    SOURCE_GROUP "Components\\\\LightSwitch"
+		"Components/LightSwitch/LightSwitch.cpp"
+		"Components/LightSwitch/LightSwitch.h"
 )
 add_sources("PlayerController_uber.cpp"
     PROJECTS Game

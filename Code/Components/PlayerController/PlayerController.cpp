@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include "PlayerController.h"
 #include "../Interaction/Interaction.h"
+#include "../Interactable.h"
 
 #include <CrySchematyc/Env/Elements/EnvComponent.h>
 #include <CrySchematyc/Env/IEnvRegistrar.h>
@@ -8,7 +9,7 @@
 #include <DefaultComponents/Input/InputComponent.h>
 #include <DefaultComponents/Physics/CharacterControllerComponent.h>
 #include <DefaultComponents/Cameras/CameraComponent.h>
-#include <CryPhysics/physinterface.h>
+#include <CryEntitySystem/IEntitySystem.h>
 #include <CryRenderer/IRenderer.h>
 
 void register_player_controller(Schematyc::IEnvRegistrar& registrar)
@@ -179,6 +180,12 @@ void CPlayerController::Initialize()
 				state_flags_.set(crouch);
 		});
 
+	input_component_->RegisterAction("player", "interact", [this](int activation_mode, float value)
+		{
+			if (activation_mode == eAAM_OnPress)
+				state_flags_.set(interact);
+		});
+
 	input_component_->BindAction("player", "rotate_yaw", eAID_KeyboardMouse, eKI_MouseX);
 	input_component_->BindAction("player", "rotate_pitch", eAID_KeyboardMouse, eKI_MouseY);
 	input_component_->BindAction("player", "moveforward", eAID_KeyboardMouse, eKI_W);
@@ -188,6 +195,7 @@ void CPlayerController::Initialize()
 	input_component_->BindAction("player", "boost", eAID_KeyboardMouse, eKI_LShift);
 	input_component_->BindAction("player", "moveup", eAID_KeyboardMouse, eKI_Space);
 	input_component_->BindAction("player", "movedown", eAID_KeyboardMouse, eKI_LCtrl);
+	input_component_->BindAction("player", "interact", eAID_KeyboardMouse, eKI_E);
 
 	character_controller_component_ = m_pEntity->GetOrCreateComponent<CCharacterControllerComponent>();
 	character_controller_component_->SetTransformMatrix(
@@ -321,6 +329,13 @@ void CPlayerController::ProcessEvent(const SEntityEvent& event)
 
 	camera_transform.SetTranslation(final_camera_transform);
 	camera_component_->SetTransformMatrix(camera_transform);
+
+	if (state_flags_.test(interact)) {
+		const auto& hit_result = interaction_component_->hit_result();
+		if (auto* const entity = gEnv->pEntitySystem->GetEntityFromPhysics(hit_result.pCollider))
+			if (auto* const interactable = entity->GetComponent<IInteractable>())
+				interactable->interact(*m_pEntity);
+	}
 
 	state_flags_.reset();
 	mouse_location_delta_.zero();
