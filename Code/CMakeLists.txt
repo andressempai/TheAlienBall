@@ -41,11 +41,23 @@ add_sources("LightSwitch_uber.cpp"
 		"Components/LightSwitch/LightSwitch.cpp"
 		"Components/LightSwitch/LightSwitch.h"
 )
+add_sources("Pedestal_uber.cpp"
+    PROJECTS Game
+    SOURCE_GROUP "Components\\\\Pedestal"
+		"Components/Pedestal/Pedestal.cpp"
+		"Components/Pedestal/Pedestal.h"
+)
 add_sources("PlayerController_uber.cpp"
     PROJECTS Game
     SOURCE_GROUP "Components\\\\PlayerController"
 		"Components/PlayerController/PlayerController.cpp"
 		"Components/PlayerController/PlayerController.h"
+)
+add_sources("Statuette_uber.cpp"
+    PROJECTS Game
+    SOURCE_GROUP "Components\\\\Statuette"
+		"Components/Statuette/Statuette.cpp"
+		"Components/Statuette/Statuette.h"
 )
 
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/CVarOverrides.h")
