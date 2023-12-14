@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include "PlayerController.h"
 #include "../Interaction/Interaction.h"
+#include "../ToolBox/ToolBox.h"
 #include "../Interactable.h"
 
 #include <CrySchematyc/Env/Elements/EnvComponent.h>
@@ -207,6 +208,7 @@ void CPlayerController::Initialize()
 	camera_component_->SetTransformMatrix(Matrix34::CreateTranslationMat(Vec3{ 0.0f, 0.0f, eyes_height_stand_ }));
 
 	interaction_component_ = m_pEntity->GetOrCreateComponentClass<CInteraction>();
+	tool_box_component_ = m_pEntity->GetOrCreateComponent<CToolBox>();
 }
 
 Cry::Entity::EventFlags CPlayerController::GetEventMask() const

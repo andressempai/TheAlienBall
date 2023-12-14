@@ -29,11 +29,23 @@ add_sources("Components_uber.cpp"
 		"Components/Interactable.h"
 		"Components/Player.h"
 )
+add_sources("Door_uber.cpp"
+    PROJECTS Game
+    SOURCE_GROUP "Components\\\\Door"
+		"Components/Door/Door.cpp"
+		"Components/Door/Door.h"
+)
 add_sources("Interaction_uber.cpp"
     PROJECTS Game
     SOURCE_GROUP "Components\\\\Interaction"
 		"Components/Interaction/Interaction.cpp"
 		"Components/Interaction/Interaction.h"
+)
+add_sources("KeyOrTool_uber.cpp"
+    PROJECTS Game
+    SOURCE_GROUP "Components\\\\KeyOrTool"
+		"Components/KeyOrTool/KeyOrTool.cpp"
+		"Components/KeyOrTool/KeyOrTool.h"
 )
 add_sources("LightSwitch_uber.cpp"
     PROJECTS Game
@@ -58,6 +70,17 @@ add_sources("Statuette_uber.cpp"
     SOURCE_GROUP "Components\\\\Statuette"
 		"Components/Statuette/Statuette.cpp"
 		"Components/Statuette/Statuette.h"
+)
+add_sources("ToolBox_uber.cpp"
+    PROJECTS Game
+    SOURCE_GROUP "Components\\\\ToolBox"
+		"Components/ToolBox/ToolBox.cpp"
+		"Components/ToolBox/ToolBox.h"
+)
+add_sources("Utils_uber.cpp"
+    PROJECTS Game
+    SOURCE_GROUP "Utils"
+		"Utils/KeysAndToolsValues.h"
 )
 
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/CVarOverrides.h")
